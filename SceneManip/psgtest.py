@@ -2,26 +2,18 @@
 # 参考：https://fuji-pocketbook.net/pysimplegui/
 import PySimpleGUI as sg
 
-layout = [  [sg.Text("name?"), sg.Input()],
-            [sg.Text("sex?"), sg.Input("mare")],
-            [sg.Button("Confirm"), sg.Button("Exit"), sg.Button(), sg.Button('はい', key='-YES-')]
+layout = [  [sg.Text("name?"), sg.Input(key="-NAME-")],
+            [sg.Text("", key="-ACT-")],
+            [sg.Button("Confirm"), sg.Button("Exit")]
         ]
 
 window = sg.Window("title", layout)
 
-event, values = window.read()
+while True:
+        event, values = window.read()
+        if event == sg.WIN_CLOSED or event=="Exit":
+                break
+        if event == "Confirm":
+                window["-ACT-"].update(f"Hi {values['-NAME-']}!")
+
 window.close()
-
-print(f"event:\t{event}")
-print(f"values:\t{values}")
-# event:  Confirm
-# values: {0: 'aaaaa', 1: 'mare'}
-
-# event:  Exit
-# values: {0: 'asdfas', 1: 'mare'}
-
-# event:
-# values: {0: '', 1: 'mare'}
-
-# event:  -YES-
-# values: {0: 'aaaaa', 1: 'mare'}
