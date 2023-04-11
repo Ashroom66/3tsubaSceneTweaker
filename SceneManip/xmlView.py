@@ -8,15 +8,18 @@ import matplotlib.pyplot as plt
 mi.set_variant('llvm_ad_rgb')
 
 # Styles
-plt.axis('off')
 sg.theme('Green')
 
 def mk_renderFig():
-    fig = plt.figure()
-    ax = fig.add_subplot(1,1,1)
     # ここにMitsubaのレンダリング
     original_image = mi.render(mi.load_file(values["-RenderPath-"]), spp=128)
     image = original_image ** (1.0/2.2)
+
+    dpi =72
+    fig = plt.figure(figsize=(image.shape[0]/dpi, image.shape[1]/dpi))
+    ax = fig.add_subplot(1,1,1)
+    plt.axis('off')
+    plt.subplots_adjust(left=0, right=1, bottom=0, top=1)
     plt.imshow(image)
     return fig
     
@@ -29,10 +32,10 @@ def update_renderWindow():
     plt.savefig(item, format="png")
     plt.clf()
     imgPanel = window["-Image-"]
-    imgPanel.update(data=item.getvalue())
+    imgPanel.update(data=item.getvalue(),size=(fig.get_size_inches()*fig.dpi))
     
 
-render_canvas = [sg.Image(key="-Image-")]
+render_canvas = [sg.Image(key="-Image-",size=(640,480))]
 
 layout = [
     [sg.Text("シーンファイル"), sg.InputText(key="-RenderPath-"), sg.FileBrowse(key="-Browse-")],
