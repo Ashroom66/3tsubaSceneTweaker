@@ -22,8 +22,6 @@ def mk_renderFig():
     plt.subplots_adjust(left=0, right=1, bottom=0, top=1)
     plt.imshow(image)
     return fig
-    
-
 
 def update_renderWindow():
     # update sg window
@@ -33,14 +31,25 @@ def update_renderWindow():
     plt.clf()
     imgPanel = window["-Image-"]
     imgPanel.update(data=item.getvalue(),size=(fig.get_size_inches()*fig.dpi))
-    
 
-render_canvas = [sg.Image(key="-Image-",size=(640,480))]
+def update_contentsPanel():
+    # パラメータが変わったときに呼び出す
+    # 入力内容を反映
+    pass
+
+def read_XML():
+    # XMLファイルからパラメータ一覧を取り出す
+    # menu_contentsにパラメータ一覧を登録する
+    pass
+
+menu_contents = []
+render_canvas = sg.Image(key="-Image-",size=(640,480))
+params_canvas = sg.Column([menu_contents], key="-Params-", size=(300, 480), scrollable=True, background_color="dark green")
 
 layout = [
-    [sg.Text("シーンファイル"), sg.InputText(key="-RenderPath-"), sg.FileBrowse(key="-Browse-")],
+    [sg.Text("シーンファイル"), sg.InputText(key="-RenderPath-", enable_events=True), sg.FileBrowse(key="-Browse-")],
     [sg.Button("保存(WIP)"), sg.Button("レンダー", key="-Render-")],
-    [render_canvas]
+    [render_canvas, params_canvas]
 ]
 window = sg.Window("MitsubaXMLviewer(ver.0.01)", layout)
 
@@ -50,5 +59,7 @@ while True:
         break
     elif event == "-Render-":
         update_renderWindow()
+    elif event == "-RenderPath-":
+        read_XML()
 
 window.close()
