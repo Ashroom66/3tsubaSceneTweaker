@@ -42,21 +42,25 @@ def update_renderWindow():
 def update_parameter():
     print("update")
     global params
-    adj_key = values["-Params-"][0]
+    prop_key = values["-Params-"][0]
     try:
-        params[adj_key] = values["-Property-"]
+        params[prop_key] = eval(values["-Property-"])
         params.update()
-        print("success")
-    except Exception:
-        print("exception")
+        print("property changed")
+    except Exception as e:
+        print ('=== ERROR ===')
+        print ('type:' + str(type(e)))
+        print ('args:' + str(e.args))
+        print ('e自身:' + str(e))
+        print ('=============')
         pass
 
 def update_propCanvas():
-    # adjへ選択中のkeyの内容を表示
-    adj_key = values["-Params-"][0]
-    prop_canvas.update(params[adj_key])
-    print(type(params[adj_key]))
-    print(params[adj_key])
+    # propへ選択中のkeyの内容を表示
+    prop_key = values["-Params-"][0]
+    prop_canvas.update(params[prop_key])
+    print(type(params[prop_key]))
+    print(params[prop_key])
 
 def read_XML():
     # XMLファイルからパラメータ一覧を取り出す
@@ -69,7 +73,6 @@ def read_XML():
 
 menu_contents = []  # str array
 render_canvas = sg.Image(key="-Image-",size=(640,480))
-# params_canvas = sg.Column(menu_contents, key="-Params-", size=(300, 480), scrollable=True, background_color="dark green", vertical_alignment='top')
 params_canvas = sg.Listbox(values=[], key="-Params-", size=(30, 20), enable_events=True)
 prop_canvas = sg.Multiline(default_text="", key="-Property-", size=(30, 7), enable_events=True)
 parameters_column = sg.Column(layout=[[params_canvas], [sg.HorizontalSeparator()], [prop_canvas]])
@@ -79,7 +82,7 @@ layout = [
     [sg.Button("保存(WIP)"), sg.Button("レンダー", key="-Render-")],
     [render_canvas, sg.VerticalSeparator(), parameters_column]
 ]
-window = sg.Window("MitsubaXMLviewer(ver.0.2)", layout)
+window = sg.Window("MitsubaXMLviewer(ver.0.4)", layout)
 
 while True:
     event, values = window.read()
