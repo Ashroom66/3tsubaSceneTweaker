@@ -50,19 +50,20 @@ def read_XML():
     global scene, params, menu_contents, window
     scene = mi.load_file(values["-RenderPath-"])
     params = mi.traverse(scene)
-    menu_contents = []
-    for i in params.keys():
-        menu_contents.append([sg.Text(i), sg.InputText(default_text=params[i], key=i)])
+    menu_contents = [i for i in params.keys()]
     window["-Params-"].update(menu_contents)
 
-menu_contents = []
+menu_contents = []  # str array
 render_canvas = sg.Image(key="-Image-",size=(640,480))
-params_canvas = sg.Column(menu_contents, key="-Params-", size=(300, 480), scrollable=True, background_color="dark green", vertical_alignment='top')
+# params_canvas = sg.Column(menu_contents, key="-Params-", size=(300, 480), scrollable=True, background_color="dark green", vertical_alignment='top')
+params_canvas = sg.Listbox(values=[], key="-Params-", size=(30, 20), enable_events=True)
+adjust_canvas = sg.Multiline(default_text="", key="-Adjust-", size=(30, 7))
+parameters_column = sg.Column(layout=[[params_canvas], [sg.HorizontalSeparator()], [adjust_canvas]])
 
 layout = [
     [sg.Text("シーンファイル"), sg.InputText(key="-RenderPath-", enable_events=True), sg.FileBrowse(key="-Browse-")],
     [sg.Button("保存(WIP)"), sg.Button("レンダー", key="-Render-")],
-    [render_canvas, sg.VerticalSeparator(), params_canvas]
+    [render_canvas, sg.VerticalSeparator(), parameters_column]
 ]
 window = sg.Window("MitsubaXMLviewer(ver.0.2)", layout)
 
