@@ -39,10 +39,24 @@ def update_renderWindow():
     print(fig.get_size_inches())
     window["-Params-"].set_size=(300, fig.get_size_inches()[1]*fig.dpi)
 
-def update_contentsPanel():
-    # パラメータが変わったときに呼び出す
-    # 入力内容を反映
-    pass
+def update_parameter():
+    print("update")
+    global params
+    adj_key = values["-Params-"][0]
+    try:
+        params[adj_key] = values["-Property-"]
+        params.update()
+        print("success")
+    except Exception:
+        print("exception")
+        pass
+
+def update_propCanvas():
+    # adjへ選択中のkeyの内容を表示
+    adj_key = values["-Params-"][0]
+    prop_canvas.update(params[adj_key])
+    print(type(params[adj_key]))
+    print(params[adj_key])
 
 def read_XML():
     # XMLファイルからパラメータ一覧を取り出す
@@ -57,8 +71,8 @@ menu_contents = []  # str array
 render_canvas = sg.Image(key="-Image-",size=(640,480))
 # params_canvas = sg.Column(menu_contents, key="-Params-", size=(300, 480), scrollable=True, background_color="dark green", vertical_alignment='top')
 params_canvas = sg.Listbox(values=[], key="-Params-", size=(30, 20), enable_events=True)
-adjust_canvas = sg.Multiline(default_text="", key="-Adjust-", size=(30, 7))
-parameters_column = sg.Column(layout=[[params_canvas], [sg.HorizontalSeparator()], [adjust_canvas]])
+prop_canvas = sg.Multiline(default_text="", key="-Property-", size=(30, 7), enable_events=True)
+parameters_column = sg.Column(layout=[[params_canvas], [sg.HorizontalSeparator()], [prop_canvas]])
 
 layout = [
     [sg.Text("シーンファイル"), sg.InputText(key="-RenderPath-", enable_events=True), sg.FileBrowse(key="-Browse-")],
@@ -75,5 +89,9 @@ while True:
         update_renderWindow()
     elif event == "-RenderPath-":
         read_XML()
+    elif event == "-Params-":
+        update_propCanvas()
+    elif event == "-Property-":
+        update_parameter()
 
 window.close()
