@@ -1,5 +1,6 @@
 import PySimpleGUI as sg
 import mitsuba as mi
+import drjit as dr
 import numpy as np
 import io
 import matplotlib.pyplot as plt
@@ -13,6 +14,19 @@ sg.theme('Green')
 # mitsuba data
 scene = ""
 params = ""
+
+def str_to_param():
+    global params
+    prop_key = values["-Params-"][0]
+    pType = str(type(params[prop_key])).split(".")[-1].split("'")[0]
+    try:
+        if pType == "Transform4f":
+            params[prop_key] = mi.Transform4f(np.array(eval(values["-Property-"])))
+        elif pType == "Color3f":
+            params[prop_key] = mi.Color3f(np.array(eval(values["-Property-"])))
+    except Exception:
+        print("TYPE ERROR: can't convert this data")
+        pass
 
 def mk_renderFig():
     global scene, params
@@ -48,12 +62,16 @@ def update_parameter():
         params.update()
         print("property changed")
     except Exception as e:
-        print ('=== ERROR ===')
-        print ('type:' + str(type(e)))
-        print ('args:' + str(e.args))
-        print ('e自身:' + str(e))
-        print ('=============')
-        pass
+        try:
+            str_to_param()
+            params.update()
+
+        except Exception as e:
+            print ('=== ERROR ===')
+            print ('type:' + str(type(e)))
+            print ('args:' + str(e.args))
+            print ('e自身:' + str(e))
+            print ('=============')
 
 def update_propCanvas():
     # propへ選択中のkeyの内容を表示
@@ -82,7 +100,7 @@ layout = [
     [sg.Button("保存(WIP)"), sg.Button("レンダー", key="-Render-")],
     [render_canvas, sg.VerticalSeparator(), parameters_column]
 ]
-window = sg.Window("MitsubaXMLviewer(ver.0.4)", layout)
+window = sg.Window("MitsubaXMLviewer(ver.0.5)", layout)
 
 while True:
     event, values = window.read()
